@@ -11,7 +11,7 @@ en utilisant ESP32, MQTT et Node-RED.
 - Dashboard Node-RED
 
 ## Architecture
-![Architecture](docs/architecture.jpej)
+![Architecture](Docs\architecture.jpeg)
 
 ## Fonctionnement
 1. ESP32 publie les données via MQTT
