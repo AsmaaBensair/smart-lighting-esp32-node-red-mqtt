@@ -1,0 +1,508 @@
+[
+    {
+        "id": "tab_marwa_prod",
+        "type": "tab",
+        "label": "Marwa - Logique PROD (Météo + Scènes)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "inj_weather",
+        "type": "inject",
+        "z": "tab_marwa_prod",
+        "name": "Météo toutes les 5 min",
+        "props": [],
+        "repeat": "300",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "x": 150,
+        "y": 60,
+        "wires": [
+            [
+                "http_weather"
+            ]
+        ]
+    },
+    {
+        "id": "http_weather",
+        "type": "http request",
+        "z": "tab_marwa_prod",
+        "name": "GET OpenWeather",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.openweathermap.org/data/2.5/weather?lat=32.89204888243759&lon=-6.922615914028288&appid=bb0f6423888755c1c204e9e1c3d400b3&units=metric&lang=fr",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 380,
+        "y": 60,
+        "wires": [
+            [
+                "fn_weather_extract",
+                "dbg_weather_raw"
+            ]
+        ]
+    },
+    {
+        "id": "dbg_weather_raw",
+        "type": "debug",
+        "z": "tab_marwa_prod",
+        "name": "DEBUG météo raw",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 640,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "fn_weather_extract",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "Extract météo -> flow + status/meteo",
+        "func": "const clouds = Number(msg.payload?.clouds?.all ?? 0);\nconst desc = String(msg.payload?.weather?.[0]?.main ?? '').toLowerCase();\n\nflow.set('meteo_clouds', clouds);\nflow.set('meteo_desc', desc);\nflow.set('meteo_ts', Date.now());\n\nmsg.payload = { clouds, desc };\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 60,
+        "wires": [
+            [
+                "out_status_meteo",
+                "dbg_weather_ok"
+            ]
+        ]
+    },
+    {
+        "id": "dbg_weather_ok",
+        "type": "debug",
+        "z": "tab_marwa_prod",
+        "name": "DEBUG météo ok",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1030,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "out_status_meteo",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB status meteo (retain)",
+        "topic": "project/status/meteo",
+        "qos": "0",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "application/json",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1030,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "in_lux",
+        "type": "mqtt in",
+        "z": "tab_marwa_prod",
+        "name": "SUB lux",
+        "topic": "project/capteur/luminosite",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_marwa_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 200,
+        "wires": [
+            [
+                "fn_auto_weather",
+                "dbg_lux"
+            ]
+        ]
+    },
+    {
+        "id": "dbg_lux",
+        "type": "debug",
+        "z": "tab_marwa_prod",
+        "name": "DEBUG lux",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 390,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "fn_auto_weather",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "AUTO: lux + météo -> pct (si pas lock manuel)",
+        "func": "let lockUntil = flow.get('manualLockUntil') || 0;\nif (Date.now() < lockUntil) return null;\n\nlet lux = Number(msg.payload?.lux);\nif (Number.isNaN(lux)) return null;\n\nlet clouds = Number(flow.get('meteo_clouds') ?? 0);\nlet desc = String(flow.get('meteo_desc') ?? '');\n\nlet pct;\nif (lux > 700) pct = 20;\nelse if (lux >= 300) pct = 60;\nelse pct = 100;\n\nif (clouds >= 80) pct += 20;\nelse if (clouds >= 50) pct += 10;\nelse if (clouds <= 20 || desc.includes('clear')) pct -= 15;\n\npct = Math.max(0, Math.min(100, pct));\n\nflow.set('source', 'auto');\nflow.set('mode', 'auto');\nflow.set('lastPct', pct);\n\nreturn [\n  { payload: { pct: pct } },\n  { payload: { pct: pct } },\n  { payload: { source: 'auto' } },\n  { payload: 'auto' }\n];",
+        "outputs": 4,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 200,
+        "wires": [
+            [
+                "out_cmd_int"
+            ],
+            [
+                "out_status_int"
+            ],
+            [
+                "out_status_source"
+            ],
+            [
+                "out_status_mode"
+            ]
+        ]
+    },
+    {
+        "id": "out_cmd_int",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB commande intensité -> ESP32",
+        "topic": "project/commande/intensite",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "application/json",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1140,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "out_cmd_col",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB commande couleur -> ESP32",
+        "topic": "project/commande/couleur",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "application/json",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1140,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "out_status_int",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB status intensité (retain)",
+        "topic": "project/status/intensite_appliquee",
+        "qos": "0",
+        "retain": "true",
+        "contentType": "application/json",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1180,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "out_status_source",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB status source (retain)",
+        "topic": "project/status/source",
+        "qos": "0",
+        "retain": "true",
+        "contentType": "application/json",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1180,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "out_status_mode",
+        "type": "mqtt out",
+        "z": "tab_marwa_prod",
+        "name": "PUB status mode_actif (retain)",
+        "topic": "project/status/mode_actif",
+        "qos": "0",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "application/json",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker_hivemq_marwa_prod",
+        "x": 1170,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "in_mode",
+        "type": "mqtt in",
+        "z": "tab_marwa_prod",
+        "name": "SUB cmd mode",
+        "topic": "project/commande/mode",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "broker_hivemq_marwa_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 300,
+        "wires": [
+            [
+                "fn_manual_mode",
+                "dbg_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "fn_manual_mode",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "MANUEL: mode auto/manuel + lock 10min",
+        "func": "let mode = String(msg.payload?.mode || '').toLowerCase();\nif (!mode) return null;\n\nflow.set('mode', mode);\nflow.set('source', 'manuel');\nflow.set('manualLockUntil', Date.now() + 10*60*1000);\n\nreturn [\n  { payload: { source: 'manuel' } },\n  { payload: mode }\n];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 320,
+        "wires": [
+            [
+                "out_status_source"
+            ],
+            [
+                "out_status_mode"
+            ]
+        ]
+    },
+    {
+        "id": "in_int_manual",
+        "type": "mqtt in",
+        "z": "tab_marwa_prod",
+        "name": "SUB cmd intensité (manuel)",
+        "topic": "project/commande/intensite",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "broker_hivemq_marwa_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 420,
+        "wires": [
+            [
+                "fn_manual_int",
+                "dbg_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "fn_manual_int",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "MANUEL: intensité + lock 10min",
+        "func": "let pct = Number(msg.payload?.pct);\nif (Number.isNaN(pct)) return null;\n\npct = Math.max(0, Math.min(100, pct));\nflow.set('source', 'manuel');\nflow.set('manualLockUntil', Date.now() + 10*60*1000);\nflow.set('lastPct', pct);\n\nreturn [\n  { payload: { pct: pct } },\n  { payload: { pct: pct } },\n  { payload: { source: 'manuel' } }\n];\n\n",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 440,
+        "wires": [
+            [
+                "out_cmd_int"
+            ],
+            [
+                "out_status_int"
+            ],
+            [
+                "out_status_source"
+            ]
+        ]
+    },
+    {
+        "id": "in_col_manual",
+        "type": "mqtt in",
+        "z": "tab_marwa_prod",
+        "name": "SUB cmd couleur (manuel)",
+        "topic": "project/commande/couleur",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "broker_hivemq_marwa_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 500,
+        "wires": [
+            [
+                "fn_manual_col",
+                "dbg_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "fn_manual_col",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "MANUEL: couleur + lock 10min",
+        "func": "let couleur = String(msg.payload?.couleur || '');\nif (!couleur) return null;\n\nflow.set('couleur', couleur);\nflow.set('source', 'manuel');\nflow.set('manualLockUntil', Date.now() + 10*60*1000);\n\nreturn [\n  { payload: { couleur: couleur } },\n  { payload: { source: 'manuel' } }\n];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 520,
+        "wires": [
+            [
+                "out_cmd_col"
+            ],
+            [
+                "out_status_source"
+            ]
+        ]
+    },
+    {
+        "id": "in_scene",
+        "type": "mqtt in",
+        "z": "tab_marwa_prod",
+        "name": "SUB scene (détente/...)",
+        "topic": "project/commande/scene",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "broker_hivemq_marwa_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 600,
+        "wires": [
+            [
+                "fn_scene_apply",
+                "dbg_cmd"
+            ]
+        ]
+    },
+    {
+        "id": "fn_scene_apply",
+        "type": "function",
+        "z": "tab_marwa_prod",
+        "name": "SCENE -> intensité + couleur + lock 10min",
+        "func": "let scene = String(msg.payload?.scene || '').toLowerCase();\nif (!scene) return null;\n\nflow.set('source','manuel');\nflow.set('manualLockUntil', Date.now() + 10*60*1000);\nflow.set('mode', scene);\n\nlet pct = 60;\nlet couleur = '255,255,255';\n\nif(scene === 'detente') { pct = 40; couleur = '255,140,0'; }\nelse if(scene === 'concentration') { pct = 70; couleur = '0,120,255'; }\nelse if(scene === 'reunion') { pct = 80; couleur = '255,255,255'; }\nelse if(scene === 'energie') { pct = 55; couleur = '0,255,120'; }\n\nflow.set('lastPct', pct);\n\nreturn [\n  { payload: { pct: pct } },\n  { payload: { couleur: couleur } },\n  { payload: { source: 'manuel' } },\n  { payload: scene },\n  { payload: { pct: pct } }\n];",
+        "outputs": 5,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 620,
+        "wires": [
+            [
+                "out_cmd_int"
+            ],
+            [
+                "out_cmd_col"
+            ],
+            [
+                "out_status_source"
+            ],
+            [
+                "out_status_mode"
+            ],
+            [
+                "out_status_int"
+            ]
+        ]
+    },
+    {
+        "id": "dbg_cmd",
+        "type": "debug",
+        "z": "tab_marwa_prod",
+        "name": "DEBUG commandes",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 640,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "broker_hivemq_marwa_prod",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Cloud (PROD)",
+        "broker": "fc2100de598448ed8db99c8295a51745.s1.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "",
+        "clientid": "marwa",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "project/status/systeme",
+        "birthQos": "0",
+        "birthPayload": "{\"etat\":\"online\"}",
+        "birthMsg": {},
+        "closeTopic": "project/status/systeme",
+        "closeQos": "0",
+        "closePayload": "{\"etat\":\"offline\"}",
+        "closeMsg": {},
+        "willTopic": "project/status/systeme",
+        "willQos": "0",
+        "willPayload": "{\"etat\":\"offline\"}",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

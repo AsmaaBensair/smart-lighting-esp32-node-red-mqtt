@@ -1,0 +1,745 @@
+[
+    {
+        "id": "377f07d62cc18955",
+        "type": "tab",
+        "label": "ASMAA - DASHBOARD ONE BLOCK (COOL)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "9938648eed5cc52b",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_left",
+        "name": "GLOBAL CSS THEME",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<!DOCTYPE html>\n<html lang=\"fr\">\n\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Smart Office Lighting - Dashboard</title>\n  <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">\n  <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\">\n  <style>\n    /* RESET ET STYLES DE BASE */\n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n\n    html,\n    body {\n      width: 100%;\n      min-height: 100vh;\n      font-family: 'Inter', sans-serif;\n      background: #0f141b;\n      color: #e0e6f0;\n      line-height: 1.6;\n      overflow-x: hidden;\n    }\n\n    /* CONTAINER PRINCIPAL - PLEINE LARGEUR */\n    .fullwidth-container {\n      width: 100%;\n      min-height: 100vh;\n      display: flex;\n      flex-direction: column;\n    }\n\n    /* EN-TÊTE - PLEINE LARGEUR */\n    .fullwidth-header {\n      width: 100%;\n      background: #1a2332;\n      border-bottom: 1px solid #2a3240;\n      padding: 20px 30px;\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n      flex-wrap: wrap;\n      gap: 20px;\n    }\n\n    .header-left {\n      flex: 1;\n      min-width: 300px;\n    }\n\n    .header-title {\n      font-size: 28px;\n      font-weight: 700;\n      background: linear-gradient(90deg, #4dabf7, #339af0);\n      -webkit-background-clip: text;\n      background-clip: text;\n      color: transparent;\n      margin-bottom: 5px;\n    }\n\n    .header-subtitle {\n      color: #8a9bb0;\n      font-size: 16px;\n      font-weight: 500;\n    }\n\n    .status-container {\n      display: flex;\n      gap: 15px;\n      flex-wrap: wrap;\n    }\n\n    .status-item {\n      display: flex;\n      align-items: center;\n      gap: 10px;\n      padding: 10px 18px;\n      background: #252e3d;\n      border-radius: 10px;\n      border: 1px solid #2a3240;\n      font-size: 14px;\n      font-weight: 500;\n    }\n\n    .status-item i {\n      font-size: 16px;\n    }\n\n    .status-online {\n      color: #51cf66;\n    }\n\n    .status-auto {\n      color: #339af0;\n    }\n\n    .status-manual {\n      color: #ff922b;\n    }\n\n    .status-weather {\n      color: #94d82d;\n    }\n\n    /* CONTENU PRINCIPAL - DISPOSITION EN GRILLE PLEINE LARGEUR */\n    .fullwidth-content {\n      flex: 1;\n      width: 100%;\n      padding: 30px;\n      display: grid;\n      grid-template-columns: repeat(12, 1fr);\n      gap: 24px;\n      align-content: start;\n    }\n\n    /* CARTES - OCCUPENT TOUT L'ESPACE DISPONIBLE */\n    .fullwidth-card {\n      background: #1a2332;\n      border: 1px solid #2a3240;\n      border-radius: 12px;\n      padding: 24px;\n      display: flex;\n      flex-direction: column;\n      transition: border-color 0.3s ease;\n    }\n\n    .fullwidth-card:hover {\n      border-color: #3a4557;\n    }\n\n    /* CARTE MODES & INTENSITÉ - 5 COLONNES */\n    .card-modes {\n      grid-column: span 5;\n    }\n\n    /* CARTE MÉTÉO - 3 COLONNES */\n    .card-weather {\n      grid-column: span 3;\n    }\n\n    /* CARTE GRAPHIQUES - 4 COLONNES */\n    .card-charts {\n      grid-column: span 4;\n    }\n\n    /* TITRE DES CARTES */\n    .card-title {\n      font-size: 20px;\n      font-weight: 600;\n      color: #e0e6f0;\n      margin-bottom: 20px;\n      padding-bottom: 15px;\n      border-bottom: 1px solid #2a3240;\n      display: flex;\n      align-items: center;\n      gap: 12px;\n    }\n\n    .card-title i {\n      color: #339af0;\n      font-size: 22px;\n    }\n\n    /* SECTION MODES */\n    .modes-section {\n      flex: 1;\n      display: flex;\n      flex-direction: column;\n    }\n\n    .modes-grid {\n      display: grid;\n      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));\n      gap: 12px;\n      margin-bottom: 30px;\n    }\n\n    .mode-btn {\n      background: #252e3d;\n      border: 1px solid #2a3240;\n      border-radius: 10px;\n      padding: 18px 12px;\n      text-align: center;\n      cursor: pointer;\n      font-weight: 500;\n      transition: all 0.2s;\n    }\n\n    .mode-btn:hover {\n      background: #2d3849;\n      border-color: #3a4557;\n    }\n\n    .mode-btn.active {\n      background: linear-gradient(135deg, #339af0, #228be6);\n      color: white;\n      border-color: #339af0;\n    }\n\n    .mode-btn.locked {\n      background: #3a2c2c;\n      color: #ff6b6b;\n      border-color: #ff6b6b;\n    }\n\n    /* SECTION INTENSITÉ */\n    .intensity-section {\n      margin-top: auto;\n    }\n\n    .intensity-header {\n      display: flex;\n      justify-content: space-between;\n      align-items: center;\n      margin-bottom: 15px;\n    }\n\n    .intensity-label {\n      font-size: 16px;\n      color: #8a9bb0;\n    }\n\n    .intensity-value {\n      font-size: 28px;\n      font-weight: 700;\n      color: #339af0;\n    }\n\n    .intensity-slider {\n      width: 100%;\n      height: 10px;\n      background: #252e3d;\n      border-radius: 5px;\n      position: relative;\n      margin: 20px 0 10px;\n    }\n\n    .slider-fill {\n      position: absolute;\n      height: 100%;\n      width: 65%;\n      background: linear-gradient(90deg, #339af0, #4dabf7);\n      border-radius: 5px;\n    }\n\n    .slider-thumb {\n      position: absolute;\n      width: 24px;\n      height: 24px;\n      background: #e0e6f0;\n      border-radius: 50%;\n      top: 50%;\n      left: 65%;\n      transform: translate(-50%, -50%);\n      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n      cursor: pointer;\n    }\n\n    .slider-scale {\n      display: flex;\n      justify-content: space-between;\n      color: #8a9bb0;\n      font-size: 14px;\n      margin-bottom: 15px;\n    }\n\n    .intensity-applied {\n      text-align: center;\n      padding-top: 15px;\n      border-top: 1px solid #2a3240;\n      color: #8a9bb0;\n      font-size: 14px;\n      font-weight: 500;\n    }\n\n    /* SECTION MÉTÉO */\n    .weather-section {\n      flex: 1;\n      display: flex;\n      flex-direction: column;\n    }\n\n    .weather-main {\n      display: flex;\n      align-items: center;\n      gap: 20px;\n      margin-bottom: 25px;\n    }\n\n    .weather-icon {\n      width: 80px;\n      height: 80px;\n      background: #252e3d;\n      border-radius: 50%;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      font-size: 40px;\n      color: #4dabf7;\n      flex-shrink: 0;\n    }\n\n    .weather-details h3 {\n      font-size: 24px;\n      color: #e0e6f0;\n      margin-bottom: 5px;\n    }\n\n    .weather-details p {\n      color: #8a9bb0;\n      font-size: 16px;\n    }\n\n    .weather-info {\n      background: #252e3d;\n      border-radius: 10px;\n      padding: 20px;\n      margin-top: auto;\n    }\n\n    .weather-clouds {\n      font-size: 18px;\n      font-weight: 600;\n      color: #94d82d;\n      margin-bottom: 10px;\n    }\n\n    .weather-description {\n      color: #8a9bb0;\n      font-size: 14px;\n    }\n\n    /* SECTION GRAPHIQUES */\n    .charts-section {\n      flex: 1;\n      display: flex;\n      flex-direction: column;\n    }\n\n    .chart-container {\n      flex: 1;\n      background: #252e3d;\n      border-radius: 10px;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      margin-bottom: 25px;\n      padding: 30px;\n    }\n\n    .chart-placeholder {\n      text-align: center;\n    }\n\n    .chart-placeholder i {\n      font-size: 48px;\n      color: #3a4557;\n      margin-bottom: 15px;\n    }\n\n    .chart-placeholder p {\n      color: #8a9bb0;\n      font-size: 16px;\n      margin-bottom: 10px;\n    }\n\n    .chart-placeholder small {\n      color: #5d6b82;\n      font-size: 14px;\n    }\n\n    .lux-display {\n      background: #252e3d;\n      border-radius: 10px;\n      padding: 20px;\n      display: flex;\n      align-items: center;\n      justify-content: space-between;\n    }\n\n    .lux-label {\n      font-size: 16px;\n      color: #8a9bb0;\n      display: flex;\n      align-items: center;\n      gap: 10px;\n    }\n\n    .lux-label i {\n      color: #ffd43b;\n      font-size: 20px;\n    }\n\n    .lux-value {\n      font-size: 36px;\n      font-weight: 700;\n      color: #ffd43b;\n    }\n\n    .lux-unit {\n      font-size: 18px;\n      color: #8a9bb0;\n      margin-left: 5px;\n    }\n\n    /* PIED DE PAGE - PLEINE LARGEUR */\n    .fullwidth-footer {\n      width: 100%;\n      background: #1a2332;\n      border-top: 1px solid #2a3240;\n      padding: 20px 30px;\n      text-align: center;\n      color: #5d6b82;\n      font-size: 14px;\n    }\n\n    /* RESPONSIVE - ADAPTATION PLEINE LARGEUR */\n    @media (max-width: 1400px) {\n      .card-modes {\n        grid-column: span 6;\n      }\n\n      .card-weather {\n        grid-column: span 3;\n      }\n\n      .card-charts {\n        grid-column: span 3;\n      }\n    }\n\n    @media (max-width: 1100px) {\n      .fullwidth-content {\n        grid-template-columns: repeat(6, 1fr);\n      }\n\n      .card-modes {\n        grid-column: span 6;\n      }\n\n      .card-weather {\n        grid-column: span 3;\n      }\n\n      .card-charts {\n        grid-column: span 3;\n      }\n    }\n\n    @media (max-width: 900px) {\n      .fullwidth-content {\n        grid-template-columns: 1fr;\n        padding: 20px;\n      }\n\n      .fullwidth-card {\n        grid-column: span 1 !important;\n      }\n\n      .fullwidth-header {\n        padding: 20px;\n        flex-direction: column;\n        align-items: flex-start;\n      }\n\n      .status-container {\n        width: 100%;\n        justify-content: flex-start;\n      }\n    }\n\n    @media (max-width: 600px) {\n      .fullwidth-content {\n        padding: 15px;\n        gap: 20px;\n      }\n\n      .fullwidth-card {\n        padding: 20px;\n      }\n\n      .modes-grid {\n        grid-template-columns: repeat(2, 1fr);\n      }\n\n      .weather-main {\n        flex-direction: column;\n        text-align: center;\n      }\n\n      .status-container {\n        flex-direction: column;\n        gap: 10px;\n      }\n\n      .status-item {\n        width: 100%;\n      }\n    }\n  </style>\n</head>\n\n<body>\n  <div class=\"fullwidth-container\">\n    <!-- EN-TÊTE -->\n    <header class=\"fullwidth-header\">\n      <div class=\"header-left\">\n        <div class=\"header-title\">Smart Office Lighting</div>\n        <div class=\"header-subtitle\">Système de contrôle d'éclairage intelligent</div>\n      </div>\n\n      <div class=\"status-container\">\n        <div class=\"status-item status-online\">\n          <i class=\"fas fa-wifi\"></i>\n          <span>Système: ONLINE</span>\n        </div>\n        <div class=\"status-item status-auto\">\n          <i class=\"fas fa-play-circle\"></i>\n          <span>Mode actif: AUTO</span>\n        </div>\n        <div class=\"status-item status-manual\">\n          <i class=\"fas fa-hand-pointer\"></i>\n          <span>Source: MANUEL</span>\n        </div>\n        <div class=\"status-item status-weather\">\n          <i class=\"fas fa-cloud-rain\"></i>\n          <span>MÉTÉO: Pluie</span>\n        </div>\n      </div>\n    </header>\n\n    <!-- CONTENU PRINCIPAL -->\n    <main class=\"fullwidth-content\">\n      <!-- CARTE MODES & INTENSITÉ -->\n      <div class=\"fullwidth-card card-modes\">\n        <div class=\"card-title\">\n          <i class=\"fas fa-sliders-h\"></i>\n          Modes & Intensité\n        </div>\n\n        <div class=\"modes-section\">\n          <div class=\"modes-grid\">\n            <div class=\"mode-btn active\">AUTO</div>\n            <div class=\"mode-btn locked\">MANUEL (LOCK)</div>\n            <div class=\"mode-btn\">CONCENTRATION</div>\n            <div class=\"mode-btn\">RÉUNION</div>\n            <div class=\"mode-btn\">DÉTENTE</div>\n            <div class=\"mode-btn\">ÉNERGIE</div>\n          </div>\n\n          <div class=\"intensity-section\">\n            <div class=\"intensity-header\">\n              <div class=\"intensity-label\">Intensité (%)</div>\n              <div class=\"intensity-value\">65%</div>\n            </div>\n\n            <div class=\"intensity-slider\">\n              <div class=\"slider-fill\"></div>\n              <div class=\"slider-thumb\"></div>\n            </div>\n\n            <div class=\"slider-scale\">\n              <span>0%</span>\n              <span>25%</span>\n              <span>50%</span>\n              <span>75%</span>\n              <span>100%</span>\n            </div>\n\n            <div class=\"intensity-applied\">\n              Intensité appliquée\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <!-- CARTE MÉTÉO -->\n      <div class=\"fullwidth-card card-weather\">\n        <div class=\"card-title\">\n          <i class=\"fas fa-cloud-sun\"></i>\n          MÉTÉO\n        </div>\n\n        <div class=\"weather-section\">\n          <div class=\"weather-main\">\n            <div class=\"weather-icon\">\n              <i class=\"fas fa-cloud-rain\"></i>\n            </div>\n            <div class=\"weather-details\">\n              <h3>Pluie</h3>\n              <p>Conditions actuelles</p>\n            </div>\n          </div>\n\n          <div class=\"weather-info\">\n            <div class=\"weather-clouds\">Nuages: 95% — rain</div>\n            <div class=\"weather-description\">Précipitations légères, ciel couvert</div>\n          </div>\n        </div>\n      </div>\n\n      <!-- CARTE GRAPHIQUES -->\n      <div class=\"fullwidth-card card-charts\">\n        <div class=\"card-title\">\n          <i class=\"fas fa-chart-line\"></i>\n          Charts\n        </div>\n\n        <div class=\"charts-section\">\n          <div class=\"chart-container\">\n            <div class=\"chart-placeholder\">\n              <i class=\"fas fa-chart-bar\"></i>\n              <p>Luminosité (lux)</p>\n              <small>No data</small>\n            </div>\n          </div>\n\n          <div class=\"lux-display\">\n            <div class=\"lux-label\">\n              <i class=\"fas fa-sun\"></i>\n              <span>Lux (instantané)</span>\n            </div>\n            <div>\n              <span class=\"lux-value\">0</span>\n              <span class=\"lux-unit\">lux</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    </main>\n\n    <!-- PIED DE PAGE -->\n    <footer class=\"fullwidth-footer\">\n      <p>Smart Office Lighting Control System © 2023 | Tous droits réservés</p>\n    </footer>\n  </div>\n</body>\n\n</html>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "global",
+        "className": "",
+        "x": 200,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "da80f117962fd5de",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB systeme",
+        "topic": "project/status/systeme",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 120,
+        "wires": [
+            [
+                "2b9c6b769e25b5ee"
+            ]
+        ]
+    },
+    {
+        "id": "2b9c6b769e25b5ee",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "systeme -> badge",
+        "func": "const etat = String(msg.payload?.etat ?? msg.payload ?? '').toLowerCase();\nmsg.payload = {\n  etat: etat || 'unknown',\n  label: etat === 'online' ? 'ONLINE' : (etat === 'offline' ? 'OFFLINE' : 'UNKNOWN'),\n  cls: etat === 'online' ? 'ok' : (etat === 'offline' ? 'bad' : 'muted')\n};\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [
+                "84493535df4121e3"
+            ]
+        ]
+    },
+    {
+        "id": "84493535df4121e3",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_left",
+        "name": "Système badge",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "format": "<div class=\"pill {{msg.payload.cls}}\"><span>Système</span><b>{{msg.payload.label}}</b></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 530,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cb1d8276edc8bda0",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB mode_actif",
+        "topic": "project/status/mode_actif",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 165,
+        "wires": [
+            [
+                "32cdcad2f83f458c"
+            ]
+        ]
+    },
+    {
+        "id": "32cdcad2f83f458c",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "mode -> pretty",
+        "func": "let m = String(msg.payload ?? '').toLowerCase();\nconst map = {auto:'AUTO', manuel:'MANUEL', concentration:'Concentration', reunion:'Réunion', detente:'Détente', energie:'Énergie'};\nmsg.payload = map[m] || (m ? m : '—');\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 165,
+        "wires": [
+            [
+                "cb79d727262e9853"
+            ]
+        ]
+    },
+    {
+        "id": "cb79d727262e9853",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_left",
+        "name": "Mode actif pill",
+        "order": 2,
+        "width": "6",
+        "height": "1",
+        "format": "<div class=\"pill\"><span>Mode actif</span><b>{{msg.payload}}</b></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 530,
+        "y": 165,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8c12fa7d39455d52",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB source",
+        "topic": "project/status/source",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 210,
+        "wires": [
+            [
+                "ea59f67ea3937743"
+            ]
+        ]
+    },
+    {
+        "id": "ea59f67ea3937743",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "source -> pretty",
+        "func": "const s = String(msg.payload?.source ?? msg.payload ?? '').toLowerCase();\nmsg.payload = (s === 'auto') ? 'AUTO' : (s === 'manuel' ? 'MANUEL' : (s || '—'));\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 210,
+        "wires": [
+            [
+                "53977e414eda1c0f"
+            ]
+        ]
+    },
+    {
+        "id": "53977e414eda1c0f",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_left",
+        "name": "Source pill",
+        "order": 3,
+        "width": "6",
+        "height": "1",
+        "format": "<div class=\"pill\"><span>Source</span><b>{{msg.payload}}</b></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 530,
+        "y": 210,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "525a63801cfa07bc",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB meteo",
+        "topic": "project/status/meteo",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 260,
+        "wires": [
+            [
+                "db8eaebfcae1c1d3"
+            ]
+        ]
+    },
+    {
+        "id": "db8eaebfcae1c1d3",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "meteo -> theme",
+        "func": "const clouds = Number(msg.payload?.clouds ?? 0);\nconst desc = String(msg.payload?.desc ?? '').toLowerCase();\nlet emoji='🌤️', label='Variable', theme='cloudy';\nif (desc.includes('rain') || desc.includes('pluie') || desc.includes('drizzle') || desc.includes('storm') || desc.includes('thunder')) { emoji='🌧️'; label='Pluie'; theme='rain'; }\nelse if (desc.includes('clear') || desc.includes('sun') || desc.includes('soleil')) { emoji='☀️'; label='Ensoleillé'; theme='sun'; }\nelse {\n  if (clouds <= 20) { emoji='☀️'; label='Ensoleillé'; theme='sun'; }\n  else if (clouds <= 50) { emoji='🌤️'; label='Partiellement nuageux'; theme='cloudy'; }\n  else if (clouds <= 80) { emoji='☁️'; label='Nuageux'; theme='cloudy'; }\n  else { emoji='☁️'; label='Très nuageux'; theme='cloudy'; }\n}\nmsg.payload = { emoji, label, clouds, desc, theme };\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 260,
+        "wires": [
+            [
+                "7a60611dc8268741"
+            ]
+        ]
+    },
+    {
+        "id": "7a60611dc8268741",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_left",
+        "name": "Météo tile",
+        "order": 4,
+        "width": "6",
+        "height": "3",
+        "format": "<div class=\"meteo {{msg.payload.theme}}\">\n  <div>\n    <div class=\"k\">MÉTÉO</div>\n    <div class=\"v\">{{msg.payload.label}}</div>\n    <div class=\"s\">Nuages: {{msg.payload.clouds}}% — {{msg.payload.desc}}</div>\n  </div>\n  <div style=\"font-size:44px;\">{{msg.payload.emoji}}</div>\n</div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 530,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "27300e19ca8a889e",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "AUTO",
+        "icon": "autorenew",
+        "payload": "{\"mode\":\"auto\"}",
+        "payloadType": "json",
+        "topic": "",
+        "x": 110,
+        "y": 360,
+        "wires": [
+            [
+                "7d05bd9f54b552c4"
+            ]
+        ]
+    },
+    {
+        "id": "93ee55dbc93995f5",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 2,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "MANUEL (lock)",
+        "icon": "lock",
+        "payload": "{\"mode\":\"manuel\"}",
+        "payloadType": "json",
+        "topic": "",
+        "x": 130,
+        "y": 400,
+        "wires": [
+            [
+                "7d05bd9f54b552c4"
+            ]
+        ]
+    },
+    {
+        "id": "01887b59404bf219",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 3,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "Concentration",
+        "icon": "psychology",
+        "payload": "{\"scene\":\"concentration\"}",
+        "payloadType": "json",
+        "x": 140,
+        "y": 450,
+        "wires": [
+            [
+                "a48ffb88506858d3"
+            ]
+        ]
+    },
+    {
+        "id": "de4385a9d0e4c319",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 4,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "Réunion",
+        "icon": "groups",
+        "payload": "{\"scene\":\"reunion\"}",
+        "payloadType": "json",
+        "x": 120,
+        "y": 490,
+        "wires": [
+            [
+                "a48ffb88506858d3"
+            ]
+        ]
+    },
+    {
+        "id": "67b943366c45b2d4",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 5,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "Détente",
+        "icon": "spa",
+        "payload": "{\"scene\":\"detente\"}",
+        "payloadType": "json",
+        "x": 120,
+        "y": 530,
+        "wires": [
+            [
+                "a48ffb88506858d3"
+            ]
+        ]
+    },
+    {
+        "id": "29a4f3d1616c6d76",
+        "type": "ui_button",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "group": "ui_grp_mid",
+        "order": 6,
+        "width": "6",
+        "height": "1",
+        "passthru": false,
+        "label": "Énergie",
+        "icon": "bolt",
+        "payload": "{\"scene\":\"energie\"}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 570,
+        "wires": [
+            [
+                "a48ffb88506858d3"
+            ]
+        ]
+    },
+    {
+        "id": "689d186ad71dee0e",
+        "type": "ui_slider",
+        "z": "377f07d62cc18955",
+        "name": "",
+        "label": "Intensité (%)",
+        "group": "ui_grp_mid",
+        "order": 7,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "outs": "all",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "x": 120,
+        "y": 630,
+        "wires": [
+            [
+                "080f2743bbdd0e82",
+                "5d92747c54522718"
+            ]
+        ]
+    },
+    {
+        "id": "080f2743bbdd0e82",
+        "type": "delay",
+        "z": "377f07d62cc18955",
+        "name": "anti-spam 300ms",
+        "pauseType": "rate",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "300ms",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": true,
+        "outputs": 1,
+        "x": 340,
+        "y": 610,
+        "wires": [
+            [
+                "5d92747c54522718"
+            ]
+        ]
+    },
+    {
+        "id": "5d92747c54522718",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "slider -> {pct}",
+        "func": "msg.payload = { pct: Number(msg.payload) };\nreturn msg;",
+        "outputs": 1,
+        "x": 540,
+        "y": 630,
+        "wires": [
+            [
+                "724afca0a63d1af3"
+            ]
+        ]
+    },
+    {
+        "id": "7d05bd9f54b552c4",
+        "type": "mqtt out",
+        "z": "377f07d62cc18955",
+        "name": "PUB cmd mode",
+        "topic": "project/commande/mode",
+        "qos": "1",
+        "retain": "false",
+        "contentType": "application/json",
+        "broker": "broker_hivemq_prod",
+        "x": 740,
+        "y": 390,
+        "wires": []
+    },
+    {
+        "id": "a48ffb88506858d3",
+        "type": "mqtt out",
+        "z": "377f07d62cc18955",
+        "name": "PUB cmd scene",
+        "topic": "project/commande/scene",
+        "qos": "1",
+        "retain": "false",
+        "contentType": "application/json",
+        "broker": "broker_hivemq_prod",
+        "x": 740,
+        "y": 510,
+        "wires": []
+    },
+    {
+        "id": "724afca0a63d1af3",
+        "type": "mqtt out",
+        "z": "377f07d62cc18955",
+        "name": "PUB cmd intensite",
+        "topic": "project/commande/intensite",
+        "qos": "1",
+        "retain": "false",
+        "contentType": "application/json",
+        "broker": "broker_hivemq_prod",
+        "x": 760,
+        "y": 630,
+        "wires": []
+    },
+    {
+        "id": "0dabe7667a329610",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB lux",
+        "topic": "project/capteur/luminosite",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 740,
+        "wires": [
+            [
+                "811633b42b0e3651"
+            ]
+        ]
+    },
+    {
+        "id": "811633b42b0e3651",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "lux -> NUMBER",
+        "func": "const lux = Number(msg.payload?.lux);\nif (Number.isNaN(lux)) return null;\nmsg.payload = lux;\nreturn msg;",
+        "outputs": 1,
+        "x": 320,
+        "y": 740,
+        "wires": [
+            [
+                "ec2862d0abf18050",
+                "ebac243f4bd68f73"
+            ]
+        ]
+    },
+    {
+        "id": "ec2862d0abf18050",
+        "type": "ui_chart",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_right",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "label": "Luminosité (lux)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No data",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1000",
+        "removeOlder": "1",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": true,
+        "colors": [
+            "#2dd4bf"
+        ],
+        "outputs": 1,
+        "x": 550,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ebac243f4bd68f73",
+        "type": "ui_gauge",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_right",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "gtype": "donut",
+        "title": "Lux (instantané)",
+        "label": "lux",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1000",
+        "colors": [
+            "#2dd4bf",
+            "#60a5fa",
+            "#f59e0b"
+        ],
+        "seg1": "300",
+        "seg2": "700",
+        "x": 560,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "b4f6e214aa4896ef",
+        "type": "mqtt in",
+        "z": "377f07d62cc18955",
+        "name": "SUB intensite_appliquee",
+        "topic": "project/status/intensite_appliquee",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "broker_hivemq_prod",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 820,
+        "wires": [
+            [
+                "5b658bb5b4ef7e05"
+            ]
+        ]
+    },
+    {
+        "id": "5b658bb5b4ef7e05",
+        "type": "function",
+        "z": "377f07d62cc18955",
+        "name": "pct -> NUMBER",
+        "func": "const pct = Number(msg.payload?.pct ?? msg.payload ?? 0);\nmsg.payload = Number.isNaN(pct) ? 0 : Math.max(0, Math.min(100, pct));\nreturn msg;",
+        "outputs": 1,
+        "x": 350,
+        "y": 820,
+        "wires": [
+            [
+                "6dc3b164dc0bbdd6",
+                "b1ae6bb6481026f9"
+            ]
+        ]
+    },
+    {
+        "id": "6dc3b164dc0bbdd6",
+        "type": "ui_gauge",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_mid",
+        "order": 8,
+        "width": "6",
+        "height": "4",
+        "gtype": "donut",
+        "title": "Intensité appliquée",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#2dd4bf",
+            "#60a5fa",
+            "#f59e0b"
+        ],
+        "seg1": "40",
+        "seg2": "75",
+        "x": 560,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "b1ae6bb6481026f9",
+        "type": "ui_template",
+        "z": "377f07d62cc18955",
+        "group": "ui_grp_mid",
+        "name": "Intensité pill",
+        "order": 9,
+        "width": "6",
+        "height": "1",
+        "format": "<div class=\"pill\"><span>Intensité (status)</span><b>{{msg.payload}} %</b></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_grp_left",
+        "type": "ui_group",
+        "name": "🧠 Control",
+        "tab": "ui_tab_final",
+        "order": 1,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "broker_hivemq_prod",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Cloud PROD",
+        "broker": "fc2100de598448ed8db99c8295a51745.s1.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "",
+        "clientid": "asmaa-dashboard",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ui_grp_mid",
+        "type": "ui_group",
+        "name": "🎚️ Modes & Intensité",
+        "tab": "ui_tab_final",
+        "order": 2,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "ui_grp_right",
+        "type": "ui_group",
+        "name": "📈 Charts",
+        "tab": "ui_tab_final",
+        "order": 3,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "ui_tab_final",
+        "type": "ui_tab",
+        "name": "Smart Office Lighting",
+        "icon": "lightbulb",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "99d0f0f7122532b8",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]

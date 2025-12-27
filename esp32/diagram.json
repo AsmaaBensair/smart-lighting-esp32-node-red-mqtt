@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "author": "Asmae Bensair",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb1",
+      "top": 23.2,
+      "left": -238.9,
+      "attrs": { "common": "cathode" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 90.35,
+      "left": -172.8,
+      "attrs": { "value": "200" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 109.55,
+      "left": -172.8,
+      "attrs": { "value": "200" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 138.35,
+      "left": -172.8,
+      "attrs": { "value": "200" }
+    },
+    {
+      "type": "wokwi-lcd2004",
+      "id": "lcd1",
+      "top": 236.8,
+      "left": -4,
+      "attrs": { "pins": "i2c" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "r1:1", "rgb1:B", "blue", [ "v0", "h-28.8" ] ],
+    [ "rgb1:G", "r2:1", "green", [ "v48", "h39.7" ] ],
+    [ "rgb1:R", "r3:1", "red", [ "v76.8" ] ],
+    [
+      "esp:GND.2",
+      "rgb1:COM",
+      "black",
+      [ "v0", "h24.04", "v-19.2", "h-345.6", "v0", "h-28.8", "v76.8", "h28.8" ]
+    ],
+    [ "r3:2", "esp:25", "red", [ "v0", "h75.6", "v-48" ] ],
+    [ "esp:26", "r2:2", "green", [ "h0" ] ],
+    [ "esp:27", "r1:2", "blue", [ "h-100.61", "v-28.8" ] ],
+    [ "esp:GND.1", "lcd1:GND", "black", [ "h-43.01", "v115.2", "h9.6" ] ],
+    [ "esp:21", "lcd1:SDA", "cyan", [ "h24.04", "v211.2", "h9.6" ] ],
+    [ "lcd1:SCL", "esp:22", "magenta", [ "h153.6", "v-249.3" ] ],
+    [ "lcd1:VCC", "esp:3V3", "violet", [ "h-19.2", "v-249.5" ] ]
+  ],
+  "dependencies": {}
+}

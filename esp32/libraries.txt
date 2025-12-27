@@ -1,0 +1,8 @@
+# Wokwi Library List
+# See https://docs.wokwi.com/guides/libraries
+
+BH1750
+PubSubClient
+ESPPubSubClientWrapper
+LiquidCrystal I2C
+ArduinoJson
